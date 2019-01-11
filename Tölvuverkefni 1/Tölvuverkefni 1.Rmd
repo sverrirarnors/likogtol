@@ -12,9 +12,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r innlestur_gogn}
-es <- read.table("husnaedi.txt", header=TRUE, sep=";")
+es <- read.table("husnaedi.txt", header=TRUE, sep=";", fileEncoding = "utf8")
 library(dplyr)
-hverfi <- c(130,300,600)
+hverfi <- c(72,100,130)
 es <- filter(es, matssvaedi%in%hverfi)
 ```
 
