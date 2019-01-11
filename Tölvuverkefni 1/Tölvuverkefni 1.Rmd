@@ -16,6 +16,7 @@ es <- read.table("husnaedi.txt", header=TRUE, sep=";", fileEncoding = "utf8")
 library(dplyr)
 hverfi <- c(72,100,130)
 es <- filter(es, matssvaedi%in%hverfi)
+ggplot(data = es, aes())
 ```
 
 ## Including Plots
