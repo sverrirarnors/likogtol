@@ -1,6 +1,6 @@
 ---
 title: "Tölvuverkefni 1"
-author: "Enar Kornelius Leferink (ekl4@hi.is), Sverrir Arnórsson (sva19@hi.is)"
+author: "Enar Kornelius Leferink (ekl4@hi.is) og Sverrir Arnórsson (sva19@hi.is)"
 date: "1/11/2019"
 output: html_document
 ---
