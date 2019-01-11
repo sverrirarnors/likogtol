@@ -19,12 +19,13 @@ es <- read.table("husnaedi.txt", header=TRUE, sep=";", fileEncoding = "utf8")
 ```{r hverfi}
 library(dplyr)
 hverfi <- c(72,100,130)
-es <- filter(es, matssvaedi%in%hverfi
+es <- filter(es, matssvaedi%in%hverfi)
+es$matssvaedi <- factor(es$matssvaedi, levels=c(72,100,130), labels=c("Hagar/Melar", "Laugarneshverfi/Vogar", "Grafarvogur"))
+
 ```
 
 ```{r }
-ggplot(data = es, aes(fill=teg_eign, matssvaedi)) + geom_bar(position="dodge") + xlab("Hverfi") +ylab("Fjöldi") +
-scale_x_discrete(labels = c("Hagar/Melar", "Laugarneshverfi/Vogar", "Grafarvogur"))
+ggplot(data = es, aes(fill=teg_eign, matssvaedi)) + geom_bar(position="dodge") + xlab("Hverfi") +ylab("Fjöldi")
 ```
 
 ## Including Plots
