@@ -28,7 +28,7 @@ ggplot(data = es, aes(fill=teg_eign, matssvaedi, labels=TRUE)) + geom_bar(positi
 ```
 ```{r einbyli}
 einbyli <- filter(es, teg_eign== "Einbýlishús")
-ggplot(data = einbyli, aes(fill=matssvaedi)) + geom_bar(position="dodge") + xlab("Hverfi") +ylab("Fjöldi")
+ggplot(data = einbyli, aes(matssvaedi)) + geom_bar(position="dodge") + xlab("Hverfi") +ylab("Fjöldi")
 ```
 
 ## Including Plots
