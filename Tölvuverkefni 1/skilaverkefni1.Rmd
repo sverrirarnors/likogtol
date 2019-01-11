@@ -1,0 +1,87 @@
+---
+title: "Skilaverkefni 1"
+author: "Líkindareikningur og tölfræði: STÆ203G, HAG206G, MAS201F"
+output: 
+  rmarkdown::html_document:
+#    theme: cosmo
+---
+
+```{r, echo=F, warning=F, message=F}
+library(dplyr)
+ahj<-read.table("husnaedi.txt", sep=";", header=T)
+```
+
+Í þessu verkefni eigið þið að vinna með hluta þess gagnasafns sem notað var við endurmat fasteignamats íbúðarhúsnæðis 2017. Þið getið lesið ykkur til um gagnasagnið hér:
+
+<https://www.skra.is/fyrirtaeki/fasteignir/fasteignamat/>
+
+Útskýringar á breytunum má finna hér (þið eruð ekki með allar breyturnar):
+
+<https://www.skra.is/library/Samnyttar-skrar-/Fyrirtaeki-stofnanir/Fasteignamat-2017/dalkaskyringar%20-%20Copy%20(1).txt>
+
+Kort sem sýnir uppskiptingu hverfa má sjá hér:
+
+<https://www.skra.is/library/Samnyttar-skrar-/Fyrirtaeki-stofnanir/Fasteignamat-2017/2016_HOFUDBORG_IBU_v2.pdf>
+
+**Þið eigið að vinna verkefnið í <tt> .Rmd </tt> skrá en skila <tt> .html </tt> skrá (LaTeX fólk má vinna í <tt> .Rnw </tt> skrá og skila <tt> .pdf </tt> skrá).
+<tt> .html </tt> skráin verður til í sömu möppu og <tt> .Rmd </tt> skráin þegar þið prjónið.**
+
+**Þið megið vinna verkefnið tvö og tvö saman en ekki í stærri hópum.
+Merkja þarf lausnir með nafni og HÍ-notendanafni þeirra sem unnu lausnina.
+Hlaða skal <tt> .html </tt> skrá inn á Uglu ekki síðar en 22. janúar klukkan 23:59. Ekki verður tekið við lausnum sem er skilað síðar.**
+
+Frágangur gildir 10% af einkunn fyrir verkefni (merkja verkefni með nafni og notendanafni, merkingar á ásum, uppsetning, ...).
+
+### Hluti 1 - innlestur gagna og smá gagnamöndl (30%)
+
+#### a)
+Lesið gagnaskrána inn með <tt> read.table() </tt> skipuninni og geymið í hlut sem ber upphafsstafi þeirra sem verkefnið vinna (ef Gréta Halldórsdóttir og Sigurður Jónsson eru að vinna saman skulu þau nefna hlutinn gs en ef Atli Pétursson er að vinna einn skal hann nefna hlutinn sinn ap). 
+
+#### b)
+Veljið ykkur þrjú hverfi á Reykjavíkursvæðinu til að skoða. Gætið þess að velja hverfi með mörgum eignum. Það sem eftir er verkefnisins skulið þið aðeins vinna með eignir í þessum þremur hverfum. Það má velja hverfin út með nokkrum aðferðum en ágætt er að nota <tt> filter() </tt> aðferðina úr <tt> dplyr </tt> pakkanum. Þið þurfið að byrja á því að sækja pakkann og svo þarf að muna eftir að setja <tt> library(dplyr) </tt> ofarlega í skjalið ykkar (í R-klump) og keyra þá línu í hvert skiptið sem þið opnið RStudio á ný og ætlið að vinna í verkefninu ykkar. Velja mætti hverfi 1, 2, og 3 með eftirfarandi kóða (þetta eru ekki raunveruleg hverfi í gagnasafninu ykkar):
+```{r, eval = F}
+hverfi<-c(1,2,3)
+ahj<-filter(ahj, matssvaedi%in%hverfi)
+```
+Takið eftir að hér er stóra gagnataflan, með öllum línunum, yfirskrifuð með þeirri minni. Hér er það í góðu lagi því við ætlum ekki að nota þá stóru hér.
+
+
+#### c)
+Kannið gerð breyta gagnasafnsins með að nota <tt> str() </tt> aðferðina.
+Ef einhverjar breytur eru ranglega skilagreindar sem talnabreytur skulið þið breyta þeim í flokkabreytur og mögulega endurnefna flokkana. Sýnið aftur úttakið úr <tt> str() </tt> aðferðinni eftir að þið hafið breytt þeim breytum sem þið ætlið að breyta.
+
+### Hluti 2 - myndræn framsetning (30%)
+
+#### a)
+Teiknið mynd sem sýnir fjölda eigna eftir hverfum og tegundum eigna (á sömu myndinni).
+
+#### b)
+Teiknið mynd sem er lýsandi fyrir stærð einbýlishúsa eftir hverfum.
+Hér má nota <tt> filter() </tt> aðferðina til að búa til nýja gagnatöflu sem inniheldur aðeins einbýlishús. Það má gera með:
+
+```{r, eval = F}
+einbyli<-filter(ahj, teg_eign == "Einbýlishús")
+```
+
+
+#### c)
+Búið til nýtt gagnasafn sem inniheldur aðeins íbúðareignir.
+Teiknið mynd sem lýsir sambandi stærðar og verðs íbúðareigna. 
+
+### Hluti 3 - lýsistærðir (30%)
+
+#### a)
+Búið til töflu þar sem má sjá fjölda einbýlishúsa og íbúðareigna í hverfunum þremur (það á að vera hægt að lesa hversu margar íbúðir eru í fyrsta hverfinu sem þið völduð osfrv.). Búið til aðra töflu sem sýnir hversu hátt hlutfall af heildarfjölda eigna í hverju hverfi fyrir sig eru íbúðareignir.
+
+#### b)
+Reiknið viðeigandi lýsistærðir, fyrir miðju og breytileika, fyrir stærð einbýlishúsa eftir hverfum. 
+
+#### c)
+Búið til nýtt gagnasafn sem inniheldur íbúðareignir sem eru af stærð frá og með $50m^2$ til og með $60m^2$.
+Það má enn og aftur gera með <tt> filter() </tt> aðferðinni:
+```{r, eval = F}
+litlar<-filter(ibudir, ibm2>=50 & ibm2 <=60)
+```
+
+Sýnið meðalverð, miðgildi verðs og staðalfrávik þessa íbúðareigna eftir hverfunum þremur. Sýnið einnig fjölda eigna í hverju hverfi.
+

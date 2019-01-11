@@ -1,0 +1,19 @@
+"0","es <- read.table(""husnaedi.txt"", header=TRUE, sep="";"")
+library(dplyr)
+"
+"2","
+Attaching package: ‘dplyr’
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+"
+"0","hverfi <- c(130,300,600)"
+"0","es <- filter(es, matssvaedi%in%hverfi)"
