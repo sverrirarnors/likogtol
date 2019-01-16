@@ -95,7 +95,7 @@ table(litlaribudir$matssvaedi)
 ```
 
 ```{r litlarlysandi}
-summary(filter(litlaribudir, matssvaedi=="Hagar/Melar"))
+summary(filter(litlaribudir, matssvaedi=="Hagar/Melar")$nuvirdi)
 ```
 
 Meðaltal núvirðis `r mean(litlaribudir$nuvirdi)`
