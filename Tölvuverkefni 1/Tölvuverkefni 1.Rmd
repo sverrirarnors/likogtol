@@ -28,7 +28,17 @@ ggplot(data = es, aes(fill=teg_eign, matssvaedi, labels=TRUE)) + geom_bar(positi
 ```
 ```{r einbyli}
 einbyli <- filter(es, teg_eign== "Einbýlishús")
-ggplot(data = einbyli, aes(matssvaedi)) + geom_bar(position="dodge") + xlab("Hverfi") +ylab("Fjöldi")
+
+fm = c(3,2,1)
+i=1
+for (hverfi in c("Hagar/Melar", "Laugarneshverfi/Vogar", "Grafarvogur")) {
+  fm[i]<-mean(filter(einbyli, matssvaedi == hverfi)$ibm2)
+  i = i+1
+}
+m2 <- data.frame(matssvaedi = c("Hagar/Melar", "Laugarneshverfi/Vogar", "Grafarvogur"), fm)
+
+ggplot(data = m2, aes(x=matssvaedi,y=fm)) + geom_col() + xlab("Hverfi") + ylab("Fermetrar") + labs(title="Meðalfermetrafjöldi einbýlishúsa eftir hverfum")
+
 ```
 
 ## Including Plots
