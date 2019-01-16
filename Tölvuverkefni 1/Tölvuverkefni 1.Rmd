@@ -35,6 +35,7 @@ Hér sést að allar breyturnar eru á réttu formi.
 ```{r eignir}
 ggplot(data = es, aes(fill=teg_eign, matssvaedi, labels=TRUE)) + geom_bar(position="dodge") + xlab("Hverfi") +ylab("Fjöldi") + labs(fill = "Tegund eignar", title = "Fjöldi eigna eftir hverfum og tegundum")
 ```
+
 ### b)
 ```{r einbyli}
 einbyli <- filter(es, teg_eign== "Einbýlishús")
@@ -50,6 +51,7 @@ m2 <- data.frame(matssvaedi = c("Hagar/Melar", "Laugarneshverfi/Vogar", "Grafarv
 ggplot(data = m2, aes(x=matssvaedi,y=fm)) + geom_col() + xlab("Hverfi") + ylab("Fermetrar") + labs(title="Meðalfermetrafjöldi einbýlishúsa eftir hverfum")
 
 ```
+
 ### c)
 ```{r ibudir}
 ibudir<-filter(es, teg_eign == "Íbúðareign")
