@@ -78,10 +78,11 @@ round(prop.table(table(es$teg_eign,es$matssvaedi),margin=2), 3)[2,]
 Lýsistærðir fyrir einbýlishús:
 
 ```{r einbyli_stat1}
-summary(einbyli$ibm2)
-```
 
-Staðalfrávik: `r sd(einbyli$ibm2)`
+eTafla <- einbyli %>% group_by(Matssvæði = matssvaedi)  %>% summarise(Min = min(nuvirdi), IQ1 = quantile(nuvirdi, 0.25), Meðaltal = mean(nuvirdi), IQ3 = quantile(nuvirdi, 0.75),Max = max(nuvirdi), Miðgildi = median(nuvirdi), Staðalfrávik = sd(nuvirdi))
+
+knitr::kable(eTafla, caption = "Lýsistærðir fyrir einbýlishús")
+```
 
 ## c)
 
@@ -89,14 +90,14 @@ Staðalfrávik: `r sd(einbyli$ibm2)`
 litlaribudir <- filter(ibudir, ibm2>=50, ibm2<=60)
 ```
 
-Fjöldi lítilla íbúða eftir hverfum:
 ```{r litlareftirhverfum}
-table(litlaribudir$matssvaedi)
+litlaribudir %>% group_by(Matssvæði = matssvaedi) %>% summarise(Fjöldi = n()) -> lTafla1
+knitr::kable(lTafla1, caption="Fjöldi lítilla íbúða eftir hverfum")
 ```
 
 ```{r litlarlysandi}
-summary(filter(litlaribudir, matssvaedi=="Hagar/Melar")$nuvirdi)
-```
 
-Meðaltal núvirðis `r mean(litlaribudir$nuvirdi)`
+lTafla2 <- litlaribudir %>% group_by(Matssvæði = matssvaedi)  %>% summarise( Fjöldi = n(), Meðaltal = mean(nuvirdi), Miðgildi = median(nuvirdi), Staðalfrávik = sd(nuvirdi))
+knitr::kable(lTafla2, caption = "Lýsistærðir fyrir litlar íbúðir")
+```
 
