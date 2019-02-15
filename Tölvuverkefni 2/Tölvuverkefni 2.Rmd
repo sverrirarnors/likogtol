@@ -1,7 +1,7 @@
 ---
-title: "Tölvuverkefni 1"
-author: "Enar Kornelius Leferink (ekl4@hi.is), Sverrir Arnórsson (sva19@hi.is)"
-date: "1/11/2019"
+title: "Tölvuverkefni 2"
+author: "Enar Kornelius Leferink (ekl4@hi.is) og Sverrir Arnórsson (sva19@hi.is)"
+date: "15/02/2019"
 output: html_document
 ---
 
@@ -15,11 +15,8 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r}
-es <- read.table("husnaedi.txt", header=TRUE, sep=";")
-library(dplyr)
-hverfi <- c(130,300,600)
-es <- filter(es, matssvaedi%in%hverfi)
+```{r cars}
+summary(cars)
 ```
 
 ## Including Plots

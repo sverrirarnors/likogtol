@@ -1,1 +1,0 @@
-gogn <- read.table("husnaedi.txt", header=TRUE, sep=";")
