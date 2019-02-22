@@ -42,18 +42,25 @@ staerd4 <- replicate(10000, mean(sample(es$nuvirdi,200)))
 ```{r}
 hmr.es <- data.frame(staerd1, staerd2, staerd3, staerd4)
 hmr.es.long <-gather(hmr.es, staerd, medaltal)
+levels <- c(staerd1, staerd2, staerd3, staerd4)
 hmr.es.long$staerd <- as.factor(hmr.es.long$staerd)
-factor(hmr.es.long, levels=c("Úrtak af stærð 10", "Úrtak af stærð 30", "Úrtak af stærð 100", "Úrtak af stærð 200"))
+levels <- c(staerd1, staerd2, staerd3, staerd4)
+labels <- c("Úrtak af stærð 10", "Úrtak af stærð 30", "Úrtak af stærð 100", "Úrtak af stærð 200")
+hmr.es.long$staerd <-factor(hmr.es.long$staerd, levels=levels(hmr.es.long$staerd), labels=labels)
 
-ggplot(hmr.es.long, aes(medaltal)) + geom_histogram() + facet_wrap(vars(staerd) ) + xlab("Meðaltal") + ylab("Fjöldi")
+
+
+ggplot(hmr.es.long, aes(medaltal)) + geom_histogram() + facet_wrap(vars(staerd)) + xlab("Meðaltal") + ylab("Fjöldi")
 ```
 ###e)
 ```{r}
-ggplot(hmr.es.long, aes(medaltal)) + geom_histogram() + facet_wrap(vars(staerd), labeller = labeller(staerd=labels), scales = "free") + xlab("Meðaltal") + ylab("Fjöldi")
+ggplot(hmr.es.long, aes(medaltal)) + geom_histogram() + facet_wrap(vars(staerd), scales = "free") + xlab("Meðaltal") + ylab("Fjöldi")
 ```
 ###f)
 ```{r}
 tafla <- hmr.es.long %>% group_by(Úrtaksstærð = staerd)  %>% summarize(Meðaltal = mean(medaltal), Dreifni = var(medaltal))
 knitr::kable(tafla)
 ```
+###g
 
+Það sem að sést í liðum e) og f) er að eftir því sem að úrtaksstærðin er aukin, því nær verður
