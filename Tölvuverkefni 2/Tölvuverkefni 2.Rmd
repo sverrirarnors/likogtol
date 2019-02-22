@@ -21,17 +21,25 @@ Gögn lesin inn, Enar Kornelius notaði sinn afmælisdag til að búa til seed o
 es <- read.table("https://notendur.hi.is/~ahj/husnaedi.txt", sep=";", header=T)
 set.seed(2605)
 hverfi <- sample(c(80,130,160,200),1)
+print(sample(c(80,130,160,200),1))
+
+```
+Þannig okkar hverfi er Hlíðar. 
+Íbúðareignir valdar úr Hlíðunum.
+```{r}
 es <- filter(es, matssvaedi%in%hverfi)
 es <- filter(es, teg_eign=="Íbúðareign")
 ```
+
 ###b)
 
-Stuðlarit af verði íbúðanna. Meðalverð er `r round(mean(es$nuvirdi), 3)` og dreifni er `r round(var(es$nuvirdi), 3)`.
+Stuðlarit af verði íbúðanna. Meðalverð er `r format(mean(es$nuvirdi),9)` og dreifni er `r format(var(es$nuvirdi), 9)`.
 ```{r}
 ggplot(data=es ,aes(nuvirdi)) + geom_histogram() + xlab("Verð")+ylab("Fjöldi")
 ```
 
 ###c)
+Úrtak af mismunandi stærðum tekið 10000 sinnum og vistað í viðeigandi vigrum. Replicate aðferðin notuð.
 ```{r}
 staerd1 <- replicate(10000, mean(sample(es$nuvirdi,10)))
 staerd2 <- replicate(10000, mean(sample(es$nuvirdi,30)))
@@ -39,6 +47,7 @@ staerd3 <- replicate(10000, mean(sample(es$nuvirdi,100)))
 staerd4 <- replicate(10000, mean(sample(es$nuvirdi,200)))
 ```
 ###d)
+Stuðlarit teiknað fyrir mismunandi stærðir. Það var gert með því að búa til gagnatöflu á hentugu sniði. Fyrst var búin til gagnatafla með víðu sniði sem var svo breytt yfir í gagnatöflu með löngu sniði. Við flokkuðum eftir úrtaksstærð með aðferðini facet_wrap.
 ```{r}
 hmr.es <- data.frame(staerd1, staerd2, staerd3, staerd4)
 hmr.es.long <-gather(hmr.es, staerd, medaltal)
@@ -52,15 +61,21 @@ hmr.es.long$staerd <-factor(hmr.es.long$staerd, levels=levels(hmr.es.long$staerd
 
 ggplot(hmr.es.long, aes(medaltal)) + geom_histogram() + facet_wrap(vars(staerd)) + xlab("Meðaltal") + ylab("Fjöldi")
 ```
+
 ###e)
+Sama stuðlarit og í d) lið teiknað nema í þetta sinn var skalinn frjáls fyrir hvert graf fyrir sig.
 ```{r}
 ggplot(hmr.es.long, aes(medaltal)) + geom_histogram() + facet_wrap(vars(staerd), scales = "free") + xlab("Meðaltal") + ylab("Fjöldi")
 ```
+
 ###f)
+Meðaltal og dreifni fyrir hverja úrtaksstærð reiknað og sett upp í töflu ásamt fjölda.
 ```{r}
-tafla <- hmr.es.long %>% group_by(Úrtaksstærð = staerd)  %>% summarize(Meðaltal = mean(medaltal), Dreifni = var(medaltal))
+tafla <- hmr.es.long %>% group_by(Úrtaksstærð = staerd)  %>% summarize(Fjöldi = n(), Meðaltal = mean(medaltal), Dreifni = var(medaltal))
 knitr::kable(tafla)
 ```
-###g
 
-Það sem að sést í liðum e) og f) er að eftir því sem að úrtaksstærðin er aukin, því nær verður
+###g)
+
+Það sem að sést í liðum d), e) og f) er að eftir því sem að úrtaksstærðin $n$ er aukin þá minnkar dreifni. Jafnframt er meðaltal um það bil það sama fyrir allar úrtaksstærðirnar. Það er í samræmi við höfuðmarkgildisregluna. Hún segir að dreifnin á $var(\bar{X})=\frac{\sigma^2}{n}$. Það kemur heim og saman við niðurstöður okkar. Fræðileg dreifni var `r format(var(es$nuvirdi), 9)` sem fæst frá dreifninni fyrir allt þýðið. Fyrir mismunandi úrtaksstærðir okkar þá fengust gildi á dreifni sem samsvara áðurnefndri formúlu fyrir dreifni. Skoðum aðeins það sem við fengum. Fyrir $n=10$ ætti dreifnin að vera $var(X)=\frac{\sigma^2}{n}=\frac{28211443}{10}=2821144$, sem passar nokkuð vel við fengið gildi á dreifni í töflunni í lið f). Sama fæst fyrir hinar úrtaksstærðirnar. Höfuðmarkgildisreglan segir enn fremur að meðalgildið sé jafnt meðalgildi þýðisins, eða $E(\bar{X})=\mu$, sem er nokkurn veginn það sem við fáum í töflunni fyrir hverja úrtaksstærð.
+
