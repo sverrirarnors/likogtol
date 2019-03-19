@@ -7,9 +7,11 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
+library(devtools)
+library(tidyverse)
+install_github("AndySouth/rnaturalearthhires")
+library(rnaturalearthhires)
 library(ggplot2)
-library(ggmap)
 library(maps)
 library(mapdata)
 ```
@@ -31,13 +33,25 @@ y<-r2d(reitir)$lat
 plot(x,y,type='n')
 text(x,y,as.character(reitir))
 ```
+```{r}
+es$hafsvaedi <- ifelse(r2d(es$reit)$lat<65 & r2d(es$reit)$lon < (-19), "SV", ifelse(r2d(es$reit)$lat>65 & r2d(es$reit)$lon <(-19), "NV", ifelse(r2d(es$reit)$lat>65 & r2d(es$reit)$lon >(-19), "NA","SA")))
+
+es$kt2 <- ifelse(es$kt==1,"Ekki kynþroska","Kynþroska")
+```
+###b)
+```{r}
+tafla1 <- es %>% group_by( Hafssvæði = hafsvaedi, Kynþroski = kt2) %>% summarize(Fjöldi=n())
+knitr::kable(tafla1)
+
+knitr::kable(round(prop.table(table(es$kt2,es$hafsvaedi),2),2),row.names=TRUE)
+
+ggplot(data=es, aes(fill=kt2, hafsvaedi)) + geom_bar(position="dodge")+ xlab("Hafsvæði") + ylab("Fjöldi") + labs(fill="Kynþroski")
+```
 
 ```{r}
-island <- map_data("world")
-ggplot() + geom_polygon(data = island, aes(x=long, y = lat, group = group)) + 
-  coord_fixed(1.3) 
-ggplot() + geom_polygon(data = island, aes(x=long, y = lat, group = group), fill="blue") + 
-  coord_fixed(xlim = c(-25, -13),  ylim = c(63, 67), ratio = 2.3) 
+world <- sf::st_as_sf(rnaturalearthhires::countries10)
+island <- world %>% filter(NAME=="Iceland")
+island %>% ggplot(aes()) + geom_sf()
 
 ```
 

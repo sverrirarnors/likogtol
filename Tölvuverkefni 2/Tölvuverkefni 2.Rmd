@@ -61,7 +61,7 @@ hmr.es.long$staerd <-factor(hmr.es.long$staerd, levels=levels(hmr.es.long$staerd
 
 ggplot(hmr.es.long, aes(medaltal)) + geom_histogram() + facet_wrap(vars(staerd)) + xlab("Meðaltal") + ylab("Fjöldi")
 ```
-
+ 
 ###e)
 Sama stuðlarit og í d) lið teiknað nema í þetta sinn var skalinn frjáls fyrir hvert graf fyrir sig.
 ```{r}
