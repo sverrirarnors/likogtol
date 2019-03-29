@@ -16,6 +16,14 @@ library(maps)
 library(mapdata)
 ```
 
+###a)
+Gagnaskrá lesin inn með `read.csv()`, geymd í gagnaramma með upphafsstöfum okkar og gögnin svo hreinsuð þannig ekki vanti gildi í gagnaskrána.
+```{r}
+es<-read.csv("http://hi.is/~gunnar/LikTol/data98.csv")
+es <- na.omit(es)
+```
+
+Breytan `hafsveadi` skilgreind með flokkunum SV, NV, NA, SA eftir fyrirframgefinni skiptingu.  
 ```{r}
 r2d <-function(r)
 {
@@ -26,32 +34,200 @@ r2d <-function(r)
     lat <- lat + 60 + halfb + 0.25
     data.frame(lat = lat, lon = lon)
 }
-es<-read.csv("http://hi.is/~gunnar/LikTol/data98.csv")
 reitir<-unique(es$reit)
-x<-r2d(reitir)$lon
-y<-r2d(reitir)$lat
-plot(x,y,type='n')
-text(x,y,as.character(reitir))
-```
-```{r}
+
 es$hafsvaedi <- ifelse(r2d(es$reit)$lat<65 & r2d(es$reit)$lon < (-19), "SV", ifelse(r2d(es$reit)$lat>65 & r2d(es$reit)$lon <(-19), "NV", ifelse(r2d(es$reit)$lat>65 & r2d(es$reit)$lon >(-19), "NA","SA")))
 
-es$kt2 <- ifelse(es$kt==1,"Ekki kynþroska","Kynþroska")
+es$hafsvaedi <- factor(es$hafsvaedi,levels=c("SV", "NV","NA","SA"))
 ```
+
+Ný kynþroskabreyta búin til.
+```{r}
+es$kt2 <- ifelse(es$kt==1,"Ekki kynþroska","Kynþroska")
+es$kt2 <- factor(es$kt2, levels=c("Ekki kynþroska","Kynþroska"))
+```
+
+
 ###b)
+
+Tafla sem sýnir hversi margir fiskar af hvoru kynþroskastigi veiddust á hverju hafsvæði búin til.
 ```{r}
 tafla1 <- es %>% group_by( Hafssvæði = hafsvaedi, Kynþroski = kt2) %>% summarize(Fjöldi=n())
 knitr::kable(tafla1)
 
-knitr::kable(round(prop.table(table(es$kt2,es$hafsvaedi),2),2),row.names=TRUE)
 
+```
+
+Önnur tafla búin til sem sýnir kynþroskahlutfallið á hverju hafsvæði fyrir sig.
+```{r}
+knitr::kable(round(prop.table(table(es$kt2,es$hafsvaedi),2),2),row.names=TRUE)
+```
+
+Mynd sem er lýsandi fyrir fjölda fiska af hvoru kynþroskastigi í hverjum flokki af hafsvæðunum fjórum teiknuð.
+```{r}
 ggplot(data=es, aes(fill=kt2, hafsvaedi)) + geom_bar(position="dodge")+ xlab("Hafsvæði") + ylab("Fjöldi") + labs(fill="Kynþroski")
 ```
 
+###c)
+
+Tafla sem sýnir fjölda fiska, meðallengd, meðalþyngd og staðalfrávik lengdar eftir aldri.
 ```{r}
-world <- sf::st_as_sf(rnaturalearthhires::countries10)
-island <- world %>% filter(NAME=="Iceland")
-island %>% ggplot(aes()) + geom_sf()
+tafla2 <- es %>% group_by('Aldur' = aldur) %>% summarize(Fjöldi = n(), 'Meðaltal lengdar'= mean(le), 'Meðaltal óslægðrar þyngdar' = mean(osl), 'Staðalfrávik lengdar eftir aldri' = sd(le))
+knitr::kable(round(tafla2,2))
+```
+
+Hér sést að lengd og þyngd virðast tengjast og aukast með aldri. Eftir því sem fiskarnir verða eldri því verra verður matið á meðaltali lengdar. Það er bara ein mæling fyrir fiska 13, 14 og 15 ára og því er ekki hægt að reikna staðalfrávik fyrir það.
+
+Mynd teiknuð sem sýnir lengd fiska eftir aldri þegar litið er á aldur sem samfellda breytu ásamt meðallengd fiska fyrir hvern aldurshóp sem stærri rauða punkta.
+```{r}
+ggplot(data=es, aes(aldur, le))+ geom_point()+ stat_summary(fun.data = mean_se, colour = "red", size = 1) + xlab("Aldur")+ ylab("Lengd")
+```
+
+Kassarit gert sem sýnir lengd fiska eftir aldri þegar litið er á aldur sem strjála breytu.
+```{r}
+ggplot(data=es,aes(factor(aldur),y=le))+geom_boxplot(outlier.color = "red") + xlab("Aldur") + ylab("Lengd")
+```
+
+Kassaritið sýnir okkur betur hvernig gögnin liggja. Við sjáum betur á hvaða bili lengdirnar eru í flestum tilvikum og sjáum einnig skýrar útlagana. Tengingin milli aldurs og lengdar kemur þess vegna skýrar fram. Á fyrri myndinni sjáum við öll gildi fyrir hvern hóp en sjáum ekki vel hversu mikill hluti af gildunum er á hverju bili.
+
+###d)
+
+Tvö hafsvæði valin af handahófi með `sample` fallinu eftir a hafa keyrt `set.seed()` með afmælisdegi Sverris.
+```{r}
+set.seed(0106)
+hafsvaedi <- sample(levels(es$hafsvaedi),2)
+print(hafsvaedi)
+```
+
+50 fiskar valdir að handahófi af hvoru hafsvæði. Fiskarnir 100 sameinaðir í eina gagnatöflu með `rbind()` 
+```{r}
+h1 <- es %>% filter(es$hafsvaedi == "SV") %>% sample_n(50)
+h2 <- es %>% filter(es$hafsvaedi == "NA") %>% sample_n(50)
+
+h <- rbind(h1,h2) 
+```
+
+###e)
+Kannað með tilgátuprófi með 95% marktæknikröfu hvort munur sé á meðallengd fiska á hafsvæðunum tveimur. Til þess að tilgátuprófið gefi „heilvita niðurstöðu“ þá þurfa líkurnar á því að villur séu gerðar í tilgátuprófinu að vera litlar. 
+
+$$H_0: \mu_1=\mu_2$$ Þar sem $\mu_0$ er meðallengd á fyrra hafsvæðinu og $\mu_1$ meðallengd á seinna hafsvæðinu.
+
+```{r}
+t.test(h1$le,h2$le)
+```
+
+
+
+
+```{r}
 
 ```
 
+###f)
+
+Stuðlarit reiknað af lengd fyrir hvert hafsvæði fyrir sig. Þéttleikafall þeirrar normaldreifingar sem eðlilegt væri að búast við að gögnin fyrir hvert hafsvæði fylgdu.
+
+```{r}
+library(reshape2)
+es.long = melt(es, id.vars='hafsvaedi', measure.vars='le', value.name='le')
+```
+
+Gögn hermd með náttúrulegu normaldreifingunni
+```{r}
+# Skilgreinum fall sem ad tekur inn gagnavigur x og
+#   skilar gognum sem fylgja "natturulegu" normaldreifingu vigursins x
+get_normal_density <- function(x, binwidth) {
+  grid <- seq(min(x), max(x), length=100)
+  data.frame(
+    le = grid,
+    normal_curve = dnorm(grid, mean(x), sd(x)) * length(x) * binwidth
+  )
+}
+
+# Skilgreinum breytu fyrir binwidth
+BW <- 3
+
+# Buum til normaldreifd gogn fyrir hvert hafsvaedi med thvi ad
+#   beita fallinu "get_normal_density" a lengdarmaelingar sem tilheyra
+#   hverju hafsvaedi fyrir sig
+normaldens <-
+  es %>%
+  group_by(hafsvaedi) %>%
+  do(get_normal_density(x=.$le, binwidth=BW))
+```
+
+Grafið teiknað ásamt normaldreifingunni.
+```{r}
+ggplot(es.long, aes(le)) + geom_histogram() + geom_line(data=normaldens, aes(le,normal_curve),color="blue") + facet_wrap(vars(hafsvaedi)) + xlab("Lengd") + ylab("Fjöldi")
+```
+
+###g)
+
+###h)
+
+###i) og j)
+
+Fyrra hafsvæðið valið og mynd teiknuð sem sýnir sambandið milli lengdar og þyngdar fiskanna.
+
+```{r}
+ggplot(data=h1, aes(le, sl))+ geom_point()+ labs(x= "Lengd", y="Slægð þyngd", title="Þyngd sem fall af lengd")
+
+```
+Línulegt aðhvarfslíkan fyrir logrann af þyngd sem fall af logranum af lengd:
+```{r}
+fit <- lm(log(sl)~log(le), data = h1)
+summary(fit)
+```
+
+Líkanið fyrir sambandið milli logranna af þyngdinni  er því $$log(\text{þyngd})=3.03\cdot log(\text{lengd})-5.07.$$
+
+Ástæðan fyrir því að það er betra að nota lograna til að búa til aðhvarfslíkan er að sambandið er ekki línulegt milli þyngdarinnar og lengdar, en þegar logrinn er tekinn verður sambandið línulegt. Það er ekki algilt að samband milli hluta sé línulegt og er það raunar algengara að það sé veldislegt. Það er auðveldara að vinna með línuleg líkön þannig er gott er að taka logrann. 
+
+Graf af logranum af þyngd sem falli af logranum af lengd. Hér teiknum við einnig jöfnu bestu línu frá líkaninu (fyrri hluti j).
+
+```{r}
+ggplot(data=h1, aes(log(le), log(sl)))+ geom_point() + geom_abline(slope = fit$coefficients[2], intercept = fit$coefficients[1],color="red") + labs(x= "Logrinn af lengd", y="Logrinn af slægðri þyngd", title="Logrinn af þyngd sem fall af logranum af lengd ásamt aðhvarfsgreiningarlíkani")
+```
+
+Gildið á $R^2$ fyrir líkanið okkar er, eins og kom fram ofar í þessum lið, $R^2\simeq0.96$. Það telst nokkuð gott og lýsir líkanið 96% af breytileika gagnanna.
+```{r}
+
+```
+
+Teiknum nú bestu línuna sem við bjuggum til fyrir lograskala á raunskala.
+
+```{r}
+gogn_likan <- 
+  data.frame(
+    x = exp(fit$model[['log(le)']]),
+    y = exp(predict(fit))
+    )
+
+ggplot(data=h1, aes(le, sl))+ geom_point()+ labs(x= "Lengd", y="Slægð þyngd", title="Þyngd sem fall af lengd") + geom_line(data=gogn_likan, aes(x,y),color="red")
+```
+
+###k)
+
+```{r}
+ggplot(data=h1,aes(factor(aldur),y=le))+geom_boxplot() + xlab("Aldur") + ylab("Lengd") + geom_smooth(method='lm', se=FALSE, aes(group=1))+geom_smooth(method="loess",se=FALSE, aes(group=1),color="red")
+litid <- lm(le~aldur, data=h1)
+stort <- lm(le~factor(aldur), data=h1)
+anova(litid, stort)
+```
+
+
+###Bónusspurning:
+
+```{r}
+x<-r2d(reitir)$lon
+y<-r2d(reitir)$lat
+
+plot(x,y,type='n')
+text(x,y,as.character(reitir))
+
+world <- sf::st_as_sf(rnaturalearthhires::countries10)
+island <- world %>% filter(NAME=="Iceland")
+tr<-data.frame(x=x, y=y, label=as.character(reitir))
+  ggplot(data=island,aes()) + geom_sf(color="blue")+ geom_point(data = tr, aes(x,y,label=label),color="red")+geom_label(data = tr, aes(x,y,label=label))
+
+```
