@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
 library(devtools)
 library(tidyverse)
 install_github("AndySouth/rnaturalearthhires")
@@ -110,19 +111,19 @@ h <- rbind(h1,h2)
 ###e)
 Kannað með tilgátuprófi með 95% marktæknikröfu hvort munur sé á meðallengd fiska á hafsvæðunum tveimur. Til þess að tilgátuprófið gefi „heilvita niðurstöðu“ þá þurfa líkurnar á því að villur séu gerðar í tilgátuprófinu að vera litlar. 
 
-$$H_0: \mu_1=\mu_2$$ og $$H_1: \mu_1\neq\mu_2$$Þar sem $\mu_0$ er meðallengd á fyrra hafsvæðinu og $\mu_1$ meðallengd á seinna hafsvæðinu.
+$$H_0: \mu_1-\mu_2=0$$ og $$H_1: \mu_1-\mu_2\neq0$$Þar sem $\mu_1$ er meðallengd á fyrra hafsvæðinu og $\mu_2$ meðallengd á seinna hafsvæðinu.
+
+Notum tilfelli 4 iii) í Fyrirlestrarnótum í tölfræði eftir Birgi Hrafnkelsson. Höfum $\alpha=0.05$.
 
 ```{r}
-t.test(h1$le,h2$le)
+t.out<-t.test(h1$le,h2$le)
+t0<-t.out$statistic
+print(t.out)
 ```
 
-Hér er p-gildið 1.045e-07 þannig að ég get hafnað núlltilgátunni.Við getum því ályktað að meðaltal lengda á hafsvæðunum tveimur sé ekki það sama. 
-
-
-
-```{r}
-
-```
+Hér er t-gildið $|t| = 5.7598>$ `r abs(qt(0.05,49))` $=t_{\alpha /2,v}$ þannig að við getum hafnað núlltilgátunni. Við getum því ályktað að meðaltal lengda á hafsvæðunum tveimur sé ekki það sama.
+p-gildið er $p=1.045\cdot10^{-7}$. Þar sem það er svona lítið gætum við haft marktæknikröfuna mjög háa, þ.e.a.s. mjög lítið $\alpha$. Nánar tiltekið, við gætum haft marktæknikröfuna allt að $100-1.045\cdot10^{-7}\simeq 99.9999999$, sem þýðir að við munum nærri því alltaf hafna núlltilgátunni.
+Öryggisbilið er [11.1271;22.8329] og inniheldur það ekki 0. Það er vegna þess að munurinn á meðaltölunum er í 95% tilfella ekki 0. Við sjáum að neðra mark bilsins er einnig mjög langt frá 0, sem undirstrikar þá ályktun sem við gerðum út frá p-gildinu; það er mjög ólíklegt að meðaltölin séu þau sömu. 
 
 ###f)
 
@@ -164,7 +165,52 @@ ggplot(es.long, aes(le)) + geom_histogram() + geom_line(data=normaldens, aes(le,
 
 ###g)
 
+```{r}
+n<-length(h1$le)
+m<-length(h2$le)
+xyind<-c(rep(1,n),rep(2,m))
+Repl<-5000
+z<-c(h1$le,h2$le)
+p_rpt<-sum(replicate(Repl,
+              abs(t0)<
+                abs(
+                  t.test(z[sample(1:length(z))]~xyind)$statistic
+                )))/Repl
+```
+
+Hér sjáum við að p-gildið úr slembivalsprófinu er `r print(p_rpt)`. Þar sem p-gildið er svona lágt munum við alltaf getað hafnað núlltilgátunni úr lið e); meðaltölin eru sumsé ekki þau sömu. 
+
 ###h)
+
+```{r}
+tafla3 <- h %>% group_by( Hafssvæði = hafsvaedi, Kynþroski = kt2) %>% summarize(Fjöldi=n())
+knitr::kable(tafla3)
+```
+
+Kannað með tilgátuprófi með 95% marktæknikröfu ($\alpha=0.05$)hvort munur sé á hlutfalli kynþroska fiska á hafsvæðunum tveimur.
+Notum tilfelli 7) í fyrirlestrarglósunum eftir Birgi. 
+Setjum fram núlltilgátu:$$H_0: p_1=p_2$$ og gagntilgátuna: $$H_1: p_1 \neq p_2$$ .
+
+```{r}
+n1<-nrow(h1)
+x1<-nrow(filter(h1, kt2 =="Kynþroska"))
+p1<-x1/n1
+n2<-nrow(h2)
+x2<-nrow(filter(h2, kt2 =="Kynþroska"))
+p2<-x2/n2
+p.hat<-(x1+x2)/(n1+n2)
+
+binom.test(x1,n1,p1)
+binom.test(x2,n2,p2)
+
+h$hafsvaedi<- factor(h$hafsvaedi, levels=levels(droplevels(h$hafsvaedi)))
+fisher.test(table(h$hafsvaedi, h$kt2))
+
+z_gildi <- (p1-p2)/sqrt(p.hat*(1-p.hat)*((1/n1)+(1/n2)))
+```
+
+Hér notum við okkur Fisher-Irwin í kafla 8.6.1 í Ross. Hlutfallið er hlutfall kynþroska fiska. Prófstærðin, p er $p=5.004 \cdot 10^{-10} < 0.025=\alpha/2$. Þ.a.l. höfnum við núlltilgátunni. 95% öryggisbilið er $[0.01712385;0.16222964]$.
+z-gildið er $z$ `r print(z_gildi)` $> 1.96 = z_{0.025}$, svo við höfnum núlltilgátunni. Getum því ályktað að hlutfall kynþroska fiska á hafsvæðunum tveimur séu ekki þau sömu.
 
 ###i) og j)
 

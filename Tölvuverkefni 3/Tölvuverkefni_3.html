@@ -446,8 +446,11 @@ h &lt;- rbind(h1,h2) </code></pre>
 <div id="e" class="section level3">
 <h3>e)</h3>
 <p>Kannað með tilgátuprófi með 95% marktæknikröfu hvort munur sé á meðallengd fiska á hafsvæðunum tveimur. Til þess að tilgátuprófið gefi „heilvita niðurstöðu“ þá þurfa líkurnar á því að villur séu gerðar í tilgátuprófinu að vera litlar.</p>
-<p><span class="math display">\[H_0: \mu_1=\mu_2\]</span> Þar sem <span class="math inline">\(\mu_0\)</span> er meðallengd á fyrra hafsvæðinu og <span class="math inline">\(\mu_1\)</span> meðallengd á seinna hafsvæðinu.</p>
-<pre class="r"><code>t.test(h1$le,h2$le)</code></pre>
+<p><span class="math display">\[H_0: \mu_1-\mu_2=0\]</span> og <span class="math display">\[H_1: \mu_1-\mu_2\neq0\]</span>Þar sem <span class="math inline">\(\mu_1\)</span> er meðallengd á fyrra hafsvæðinu og <span class="math inline">\(\mu_2\)</span> meðallengd á seinna hafsvæðinu.</p>
+<p>Notum tilfelli 4 iii) í Fyrirlestrarnótum í tölfræði eftir Birgi Hrafnkelsson. Höfum <span class="math inline">\(\alpha=0.05\)</span>.</p>
+<pre class="r"><code>t.out&lt;-t.test(h1$le,h2$le)
+t0&lt;-t.out$statistic
+print(t.out)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
@@ -459,6 +462,7 @@ h &lt;- rbind(h1,h2) </code></pre>
 ## sample estimates:
 ## mean of x mean of y 
 ##     74.40     57.42</code></pre>
+<p>Hér er t-gildið <span class="math inline">\(|t| = 5.7598&gt;\)</span> 1.6765509 <span class="math inline">\(=t_{\alpha /2,v}\)</span> þannig að við getum hafnað núlltilgátunni. Við getum því ályktað að meðaltal lengda á hafsvæðunum tveimur sé ekki það sama. p-gildið er <span class="math inline">\(p=1.045\cdot10^{-7}\)</span>. Þar sem það er svona lítið gætum við haft marktæknikröfuna mjög háa, þ.e.a.s. mjög lítið <span class="math inline">\(\alpha\)</span>. Nánar tiltekið, við gætum haft marktæknikröfuna allt að <span class="math inline">\(100-1.045\cdot10^{-7}\simeq 99.9999999\)</span>, sem þýðir að við munum nærri því alltaf hafna núlltilgátunni. Öryggisbilið er [11.1271;22.8329] og inniheldur það ekki 0. Það er vegna þess að munurinn á meðaltölunum er í 95% tilfella ekki 0. Við sjáum að neðra mark bilsins er einnig mjög langt frá 0, sem undirstrikar þá ályktun sem við gerðum út frá p-gildinu; það er mjög ólíklegt að meðaltölin séu þau sömu.</p>
 </div>
 <div id="f" class="section level3">
 <h3>f)</h3>
@@ -498,9 +502,73 @@ normaldens &lt;-
 </div>
 <div id="g" class="section level3">
 <h3>g)</h3>
+<pre class="r"><code>n&lt;-length(h1$le)
+m&lt;-length(h2$le)
+xyind&lt;-c(rep(1,n),rep(2,m))
+Repl&lt;-5000
+z&lt;-c(h1$le,h2$le)
+p_rpt&lt;-sum(replicate(Repl,
+              abs(t0)&lt;
+                abs(
+                  t.test(z[sample(1:length(z))]~xyind)$statistic
+                )))/Repl</code></pre>
+<p>Hér sjáum við að p-gildið úr slembivalsprófinu er . Þar sem p-gildið er svona lágt munum við alltaf getað hafnað núlltilgátunni úr lið e); meðaltölin eru sumsé ekki þau sömu.</p>
 </div>
 <div id="h" class="section level3">
 <h3>h)</h3>
+<pre class="r"><code>tafla3 &lt;- h %&gt;% group_by( Hafssvæði = hafsvaedi, Kynþroski = kt2) %&gt;% summarize(Fjöldi=n())
+knitr::kable(tafla1)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Hafssvæði</th>
+<th align="left">Kynþroski</th>
+<th align="right">Fjöldi</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">SV</td>
+<td align="left">Ekki kynþroska</td>
+<td align="right">221</td>
+</tr>
+<tr class="even">
+<td align="left">SV</td>
+<td align="left">Kynþroska</td>
+<td align="right">508</td>
+</tr>
+<tr class="odd">
+<td align="left">NV</td>
+<td align="left">Ekki kynþroska</td>
+<td align="right">934</td>
+</tr>
+<tr class="even">
+<td align="left">NV</td>
+<td align="left">Kynþroska</td>
+<td align="right">394</td>
+</tr>
+<tr class="odd">
+<td align="left">NA</td>
+<td align="left">Ekki kynþroska</td>
+<td align="right">981</td>
+</tr>
+<tr class="even">
+<td align="left">NA</td>
+<td align="left">Kynþroska</td>
+<td align="right">215</td>
+</tr>
+<tr class="odd">
+<td align="left">SA</td>
+<td align="left">Ekki kynþroska</td>
+<td align="right">204</td>
+</tr>
+<tr class="even">
+<td align="left">SA</td>
+<td align="left">Kynþroska</td>
+<td align="right">224</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="i-og-j" class="section level3">
 <h3>i) og j)</h3>
