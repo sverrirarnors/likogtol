@@ -110,12 +110,13 @@ h <- rbind(h1,h2)
 ###e)
 Kannað með tilgátuprófi með 95% marktæknikröfu hvort munur sé á meðallengd fiska á hafsvæðunum tveimur. Til þess að tilgátuprófið gefi „heilvita niðurstöðu“ þá þurfa líkurnar á því að villur séu gerðar í tilgátuprófinu að vera litlar. 
 
-$$H_0: \mu_1=\mu_2$$ Þar sem $\mu_0$ er meðallengd á fyrra hafsvæðinu og $\mu_1$ meðallengd á seinna hafsvæðinu.
+$$H_0: \mu_1=\mu_2$$ og $$H_1: \mu_1\neq\mu_2$$Þar sem $\mu_0$ er meðallengd á fyrra hafsvæðinu og $\mu_1$ meðallengd á seinna hafsvæðinu.
 
 ```{r}
 t.test(h1$le,h2$le)
 ```
 
+Hér er p-gildið 1.045e-07 þannig að ég get hafnað núlltilgátunni.Við getum því ályktað að meðaltal lengda á hafsvæðunum tveimur sé ekki það sama. 
 
 
 
@@ -228,6 +229,9 @@ text(x,y,as.character(reitir))
 world <- sf::st_as_sf(rnaturalearthhires::countries10)
 island <- world %>% filter(NAME=="Iceland")
 tr<-data.frame(x=x, y=y, label=as.character(reitir))
-  ggplot(data=island,aes()) + geom_sf(color="blue")+ geom_point(data = tr, aes(x,y,label=label),color="red")+geom_label(data = tr, aes(x,y,label=label))
+graf <- ggplot(data=island,aes()) + geom_sf(color="blue")
+graf <- graf + geom_point(data = tr, aes(x,y),color="red")+geom_label(data = tr, aes(x,y,label=label))
+graf + scale_y_continuous(breaks = seq(63,68,1))
+
 
 ```
