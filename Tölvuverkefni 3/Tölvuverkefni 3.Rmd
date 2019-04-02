@@ -5,7 +5,7 @@ date: "18/03/2019"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=TRUE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(devtools)
@@ -163,6 +163,8 @@ Grafið teiknað ásamt normaldreifingunni.
 ggplot(es.long, aes(le)) + geom_histogram() + geom_line(data=normaldens, aes(le,normal_curve),color="blue") + facet_wrap(vars(hafsvaedi)) + xlab("Lengd") + ylab("Fjöldi")
 ```
 
+#SVARA:FYLGJA GÖGNIN NORMALDREIFINGU??????
+
 ###g)
 
 ```{r}
@@ -178,7 +180,7 @@ p_rpt<-sum(replicate(Repl,
                 )))/Repl
 ```
 
-Hér sjáum við að p-gildið úr slembivalsprófinu er `r print(p_rpt)`. Þar sem p-gildið er svona lágt munum við alltaf getað hafnað núlltilgátunni úr lið e); meðaltölin eru sumsé ekki þau sömu. 
+Hér sjáum við að p-gildið úr slembivalsprófinu er r print(p_rpt)`. Þar sem p-gildið er svona lágt munum við alltaf getað hafnað núlltilgátunni úr lið e); meðaltölin eru sumsé ekki þau sömu. 
 
 ###h)
 
@@ -263,6 +265,10 @@ likon.mat <-anova(litid, stort)
 ```
 
 Þar sem Pr(>F) (0.03198) er miklu lægra heldur en F gildið (2.7198) getum við ályktað að það sé alls ekki línulegt samband milli lengdar og aldurs þegar litið er á aldur sem flokkabreytu.
+
+#Stebbi sagði að það ætti ekki að leggja línu í gegnum boxplottið heldur í gegnum gögnin?
+#Hér þarf að bæta við eh í sambandi við þetta Anova
+
 ###Bónusspurning:
 
 ```{r}
