@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(devtools)
 library(tidyverse)
-install_github("AndySouth/rnaturalearthhires")
+
 library(rnaturalearthhires)
 library(ggplot2)
 library(maps)
@@ -20,7 +20,7 @@ library(mapdata)
 ###a)
 Gagnaskrá lesin inn með `read.csv()`, geymd í gagnaramma með upphafsstöfum okkar og gögnin svo hreinsuð þannig ekki vanti gildi í gagnaskrána.
 ```{r}
-es<-read.csv("http://hi.is/~gunnar/LikTol/data98.csv")
+es<-read.csv("data98.csv")
 es <- na.omit(es)
 ```
 
@@ -256,13 +256,13 @@ ggplot(data=h1, aes(le, sl))+ geom_point()+ labs(x= "Lengd", y="Slægð þyngd",
 ###k)
 
 ```{r}
-ggplot(data=h1,aes(factor(aldur),y=le))+geom_boxplot() + xlab("Aldur") + ylab("Lengd") + geom_smooth(method='lm', se=FALSE, aes(group=1))+geom_smooth(method="loess",se=FALSE, aes(group=1),color="red")
+ggplot(data=h1,aes(factor(aldur),y=le))+geom_boxplot() + xlab("Aldur") + ylab("Lengd") + geom_smooth(method='lm', se=FALSE, aes(group=1))
 litid <- lm(le~aldur, data=h1)
 stort <- lm(le~factor(aldur), data=h1)
-anova(litid, stort)
+likon.mat <-anova(litid, stort)
 ```
 
-
+Þar sem Pr(>F) (0.03198) er miklu lægra heldur en F gildið (2.7198) getum við ályktað að það sé alls ekki línulegt samband milli lengdar og aldurs þegar litið er á aldur sem flokkabreytu.
 ###Bónusspurning:
 
 ```{r}
