@@ -10,7 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(devtools)
 library(tidyverse)
-
+library("ggpubr")
+library(Hmisc)
 library(rnaturalearthhires)
 library(ggplot2)
 library(maps)
@@ -81,8 +82,11 @@ Hér sést að lengd og þyngd virðast tengjast og aukast með aldri. Eftir þv
 
 Mynd teiknuð sem sýnir lengd fiska eftir aldri þegar litið er á aldur sem samfellda breytu ásamt meðallengd fiska fyrir hvern aldurshóp sem stærri rauða punkta.
 ```{r}
-ggplot(data=es, aes(aldur, le))+ geom_point()+ stat_summary(fun.data = mean_se, colour = "red", size = 1) + xlab("Aldur")+ ylab("Lengd")
+
+
+ggplot(data=es, aes(aldur, le))+ geom_point()+ stat_summary(fun.data = mean_cl_boot, colour = "red", size = 1) + xlab("Aldur")+ ylab("Lengd")
 ```
+Hér eru rauðar línur þar sem meðaltalið er ekki sérstaklega nákvæmt.
 
 Kassarit gert sem sýnir lengd fiska eftir aldri þegar litið er á aldur sem strjála breytu.
 ```{r}
@@ -163,7 +167,14 @@ Grafið teiknað ásamt normaldreifingunni.
 ggplot(es.long, aes(le)) + geom_histogram() + geom_line(data=normaldens, aes(le,normal_curve),color="blue") + facet_wrap(vars(hafsvaedi)) + xlab("Lengd") + ylab("Fjöldi")
 ```
 
-#SVARA:FYLGJA GÖGNIN NORMALDREIFINGU??????
+
+Hér má sjá að lengdin á SV-, NV-, og SA-svæðunum fylgja nokkurnveginn normaldreifingu, en það er erfiðara að segja til um SA því að það eru aðeins færri mælingar á því hafsvæði en hinum. En NA hafsvæðið er ekki alveg normaldreift því að það hefur tvo toppa sitt hvoru megin við meðaltalið. Það sést líka ef Shapiro-Wilk próf er notað.
+
+```{r}
+print(shapiro.test(h2$le))
+```
+
+Hér er p-gildið undir 5% svo ekki er hægt að segja með góðu móti að lengdin á NA-svæðinu sé normaldreifð
 
 ###g)
 
@@ -222,6 +233,7 @@ Fyrra hafsvæðið valið og mynd teiknuð sem sýnir sambandið milli lengdar o
 ggplot(data=h1, aes(le, sl))+ geom_point()+ labs(x= "Lengd", y="Slægð þyngd", title="Þyngd sem fall af lengd")
 
 ```
+
 Línulegt aðhvarfslíkan fyrir logrann af þyngd sem fall af logranum af lengd:
 ```{r}
 fit <- lm(log(sl)~log(le), data = h1)
@@ -262,12 +274,10 @@ ggplot(data=h1,aes(factor(aldur),y=le))+geom_boxplot() + xlab("Aldur") + ylab("L
 litid <- lm(le~aldur, data=h1)
 stort <- lm(le~factor(aldur), data=h1)
 likon.mat <-anova(litid, stort)
+print(likon.mat)
 ```
 
-Þar sem Pr(>F) (0.03198) er miklu lægra heldur en F gildið (2.7198) getum við ályktað að það sé alls ekki línulegt samband milli lengdar og aldurs þegar litið er á aldur sem flokkabreytu.
-
-#Stebbi sagði að það ætti ekki að leggja línu í gegnum boxplottið heldur í gegnum gögnin?
-#Hér þarf að bæta við eh í sambandi við þetta Anova
+Ef við segjum að þetta sé tilgátupróf þar sem núlltilgátan sé að það sé línulegt samband milli lengdar og aldurs og gagntilgátan sé að það sé ekki línulegt samband. Þar sem Pr(>F) (0.03198) er lægra en marktæknikrafan miklu lægra heldur en F gildið (F=2.7198, miðað við 95% marktæknikröfu) getum við ályktað að það sé alls ekki línulegt samband milli lengdar og aldurs þegar litið er á aldur sem flokkabreytu og þannig hafnað núlltilgátunni.
 
 ###Bónusspurning:
 
